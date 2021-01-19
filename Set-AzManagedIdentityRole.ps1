@@ -14,12 +14,22 @@ function Add-AzManagedIdentityAppRole {
         #Specify that you want to use Interactive Mode
         [Switch]$Interactive,
 
-        #Choose an Interactive mode. Will use Out-Gridview by default
+        #Choose an Interactive mode. Will use Out-Gridview by default and fallback to console if not available
         [ValidateSet('GUI','Console')]$InteractiveMode = 'GUI'
     )
 
     $ErrorActionPreference = 'Stop'
-    $selectionMethod = if (get-command Out-Gridview)
+
+    #Interactive Mode Sanity Check
+    if ($Interactive) {
+        if ($InteractiveMode -eq 'GUI' -and -not (Get-Command 'Out-GridView' -ErrorAction SilentlyContinue)) {
+            if (Get-Command 'Out-ConsoleGridView' -ErrorAction SilentlyContinue) {
+                $InteractiveMode = 'Console'
+            } else {
+                throw [NotSupportedException]'-Interactive was specified but neither Out-Gridview or Out-ConsoleGridview was found. Hint: Install-Module Microsoft.Powershell.ConsoleGuiTools'
+            }
+        }
+    }
 
     if (-not $ObjectId) {
         if (-not $Interactive) {
