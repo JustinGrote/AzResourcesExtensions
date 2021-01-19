@@ -15,7 +15,7 @@ function Add-AzManagedIdentityAppRole {
         [Switch]$Interactive,
 
         #Choose an Interactive mode. Will use Out-Gridview by default
-        [ValidateSet('GUI','Console')]$InteractiveMode
+        [ValidateSet('GUI','Console')]$InteractiveMode = 'GUI'
     )
 
     $ErrorActionPreference = 'Stop'
