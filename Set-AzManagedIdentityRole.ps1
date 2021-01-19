@@ -23,7 +23,7 @@ function Add-AzManagedIdentityAppRole {
     #Interactive Mode Sanity Check
     if ($Interactive) {
         if ($InteractiveMode -eq 'GUI' -and -not (Get-Command 'Out-GridView' -ErrorAction SilentlyContinue)) {
-            if (Get-Command 'Out-ConsoleGridView' -ErrorAction SilentlyContinue) {
+            if ($PSVersionTable.PSVersion -ge '6.2.0' -and Get-Command 'Out-ConsoleGridView' -ErrorAction SilentlyContinue) {
                 $InteractiveMode = 'Console'
             } else {
                 throw [NotSupportedException]'-Interactive was specified but neither Out-Gridview or Out-ConsoleGridview was found. Hint: Install-Module Microsoft.Powershell.ConsoleGuiTools'
