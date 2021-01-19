@@ -1,3 +1,4 @@
+#requires -module AzureAD
 <#
 .LINK
 https://stackoverflow.com/questions/63953702/access-o365-exchange-online-with-an-azure-managed-identity-or-service-principal
