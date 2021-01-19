@@ -12,14 +12,21 @@ function Add-AzManagedIdentityAppRole {
         [Parameter(ValueFromPipelineByPropertyName)][String]$ObjectId,
 
         #Specify that you want to use Interactive Mode
-        [Switch]$Interactive
+        [Switch]$Interactive,
+
+        #Choose an Interactive mode. Will use Out-Gridview by default
+        [ValidateSet = 'GUI','Console']$InteractiveMode
     )
 
     $ErrorActionPreference = 'Stop'
-    $sp = Get-AzureADServicePrincipal -Filter  "displayName eq 'Office 365 Exchange Online'"
+    $selectionMethod = if (get-command Out-Gridview)
 
-    if (-not $ObjectId -and -not $Interactive) {
+    if (-not $ObjectId) {
+        if (-not $Interactive) {
+            throw [InvalidOperationException]'You must provide a service identity to act upon, either by its objectID, via the pipeline, or via the -Interactive switch'
+        }
 
     }
+
 
 }
