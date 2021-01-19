@@ -38,7 +38,6 @@ function Add-AzManagedIdentityAppRole {
                 'Out-ConsoleGridView'
             }
         }
-
     }
 
     if (-not $ObjectId) {
@@ -46,7 +45,10 @@ function Add-AzManagedIdentityAppRole {
             throw [InvalidOperationException]'You must provide a service identity to act upon, either by its objectID, via the pipeline, or via the -Interactive switch'
         }
 
-        & $InteractiveCommand -Title
+        $spResult = (Get-AzureADServicePrincipal -filter "servicePrincipalType eq 'ManagedIdentity'" -Top ([int]::MaxValue) |
+            & $InteractiveCommand -Title 'Select the target Service Principal for role assignment' -OutputMode Single)
+        if (-not $spResult) {throw 'You must select a service principal to which the new roles will be assigned'}
+
     }
 
 
