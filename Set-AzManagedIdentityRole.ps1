@@ -9,7 +9,7 @@ function Add-AzManagedIdentityAppRole {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         #Object ID of the managed service identity you wish to use
-        [Parameter(ValueFromPipelineByPropertyName)][String]$ObjectId,
+        [Parameter(ValueFromPipelineByPropertyName)][Guid]$ObjectId,
 
         #Specify that you want to use Interactive Mode
         [Switch]$Interactive,
@@ -29,6 +29,16 @@ function Add-AzManagedIdentityAppRole {
                 throw [NotSupportedException]'-Interactive was specified but neither Out-Gridview or Out-ConsoleGridview was found. Hint: Install-Module Microsoft.Powershell.ConsoleGuiTools'
             }
         }
+
+        $InteractiveCommand = switch ($InteractiveMode) {
+            'GUI' {
+                'Out-GridView'
+            }
+            'Console' {
+                'Out-ConsoleGridView'
+            }
+        }
+
     }
 
     if (-not $ObjectId) {
@@ -36,6 +46,7 @@ function Add-AzManagedIdentityAppRole {
             throw [InvalidOperationException]'You must provide a service identity to act upon, either by its objectID, via the pipeline, or via the -Interactive switch'
         }
 
+        & $InteractiveCommand -Title
     }
 
 
