@@ -11,6 +11,7 @@ function Add-AzManagedIdentityAppRole {
         [Parameter(ValueFromPipelineByPropertyName)][String]$ObjectId,
 
         #Specify that you want to use Interactive Mode
+        [Switch]$Interactive
     )
 
     $ErrorActionPreference = 'Stop'
