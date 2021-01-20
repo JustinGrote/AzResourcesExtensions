@@ -1,7 +1,7 @@
 using namespace Microsoft.Azure.Commands.Profile.Models
 using namespace Microsoft.Powershell.Commands
 using namespace System.Net.Http
-function Invoke-AzADMSGraphMethod {
+function Invoke-AzADGraphMethod {
 
     param (
         #Target Path to Invoke
