@@ -1,11 +1,15 @@
 #requires -module Az.Resources
+BeforeAll {
+    Import-Module $PSScriptRoot/../AzResourcesExtensions.psd1 -Force
+}
 Describe 'Invoke-AzADGraphMethod' {
-    BeforeAll {
-        . $PSScriptRoot/Invoke-AzADGraphMethod.ps1
-        . $PSScriptRoot/../Private/Format-GraphError.ps1
-    }
+
     It "Works with defaults" {
         [guid](Invoke-AzADGraphMethod -Path 'me').id | 
+            Should -BeOfType 'Guid'
+    }
+    It "Handles trailing slash path" {
+        [guid](Invoke-AzADGraphMethod -Path '/me').id | 
             Should -BeOfType 'Guid'
     }
     It "Handles Resource Not Found" {

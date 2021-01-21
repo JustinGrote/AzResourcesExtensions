@@ -20,6 +20,9 @@ function Invoke-AzADGraphMethod {
         [Uri]$Endpoint = ([String]$Endpoint + '/')
     }
 
+    #Strip trailing slashes off of path, also due to URI quirkiness
+    $Path = $Path -replace '^[/\\]',''
+
     $BaseUri = [Uri]::new($Endpoint, "$Version/")
 
     [SecureString]$Token = (Get-AzAccessToken -ResourceUrl $Endpoint).Token | 
@@ -44,7 +47,7 @@ function Invoke-AzADGraphMethod {
             throw [InvalidOperationException](Format-GraphError $PSItem)
         }
         
-        $QueryResults += if ($Results.value) {
+        if ($Results.value) {
             $Results.value
         } else {
             $Results
@@ -61,7 +64,4 @@ function Invoke-AzADGraphMethod {
     } while (
         $null -ne $irmParams.Uri
     )
-
-    # Return the result.
-    $QueryResults
 }
