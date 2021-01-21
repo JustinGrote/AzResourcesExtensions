@@ -24,8 +24,8 @@ function Get-AzADManagedIdentity {
             Body = @{}
         }
 
-        if ($id -eq [guid]::Empty) {
-            $Body.'$filter' = "servicePrincipalType eq 'ManagedIdentity'"
+        if ($null -eq $id -or [guid]::Empty -eq $id) {
+            $graphParams.Body.'$filter' = "servicePrincipalType eq 'ManagedIdentity'"
         }
         
         Invoke-AzADGraphMethod @graphParams
