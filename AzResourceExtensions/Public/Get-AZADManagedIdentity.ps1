@@ -13,13 +13,26 @@ function Get-AzADManagedIdentity {
         [Parameter(ValueFromPipelineByPropertyName)]
         [Guid]$Id
     )
+    
+    process {
+        $path = 'servicePrincipals'
+        if ($id) {
+            $path = $path,$id -join '/'
+        }
+        $graphParams = @{
+            Path = $path
+            Body = @{}
+        }
 
-    # function await ([Task]$Task) {
-    #     #Simple helper function for async methods
-    #     $Task.GetAwaiter().GetResult()
-    # }
+        if ($id -eq [guid]::Empty) {
+            $Body.'$filter' = "servicePrincipalType eq 'ManagedIdentity'"
+        }
+        
+        Invoke-AzADGraphMethod @graphParams
+    }
 
     #Region NetMethod
+    #Preserved for Example
     # #Extract a service principals client from this cmdlet
     # $spClient = [GetAzureAdServicePrincipalCommand]::new().ActiveDirectoryClient.graphclient.serviceprincipals
     
@@ -33,33 +46,4 @@ function Get-AzADManagedIdentity {
     #     $PSItem
     # }
     #endregion NETMethod
-
-    #Powershell Method
-    $graphToken = Get-AzAccessToken -ResourceTypeName AadGraph
-    $BaseUri = 'https://graph.windows.net',[Guid]$graphToken.TenantId -join '/'
-    if ($Id) {
-        $requestPath = 'servicePrincipals',$Id -join '/'
-    } else {
-        $requestPath = 'servicePrincipals'
-    }
-    
-    $irmParams = @{
-        URI = $($baseUri,$requestPath -join '/')
-        Body = @{
-            'api-version' = 1.6
-            '$filter' = "servicePrincipalType eq 'ManagedIdentity'"
-        }
-        Authentication = 'Bearer'
-        Token = $graphToken.Token | ConvertTo-SecureString -AsPlainText -Force
-        FollowRelLink = $true
-    }
-    $result = Invoke-RestMethod @irmParams
-    $result.value | Select-Object ServicePrincipalNames,
-        objectType,
-        DisplayName,
-        @{N='Id';E={$PSItem.ObjectId}},
-        @{N='ApplicationId';E={$PSItem.AppId}},
-        @{N='Type';E={$PSItem.servicePrincipalType}} | foreach {
-            [Microsoft.Azure.Commands.ActiveDirectory.PSADServicePrincipal]$PSItem
-        }
 }
