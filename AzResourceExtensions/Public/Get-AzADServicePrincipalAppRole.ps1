@@ -10,6 +10,7 @@ class AppRole {
     [bool]$IsEnabled
     [string[]]$AllowedMemberTypes
     [string]$Value
+    [string]$origin
     [guid]$AppId
 
     [string]ToString() {
@@ -29,12 +30,21 @@ function Get-AzADServicePrincipalAppRole {
         [Guid]$Id
     )
 
-    function await ([Task]$Task) {
-        #Simple helper function for async methods
-        $Task.GetAwaiter().GetResult()
+    #Powershell Method
+
+    process {
+        $graphParams = @{
+            Path = 'servicePrincipals',$Id,'appRoles' -join '/'
+        }
+        Invoke-AzADGraphMethod @graphParams | Foreach-Object {
+            $result = [AppRole]$PSItem
+            $result.AppId = $Id
+            $result
+        }
     }
 
     #Region NetMethod
+    # Preserved for reference
     # #Extract a service principals client from this cmdlet
     # $spClient = [GetAzureAdServicePrincipalCommand]::new().ActiveDirectoryClient.graphclient.serviceprincipals
     
@@ -48,20 +58,4 @@ function Get-AzADServicePrincipalAppRole {
     #     $PSItem
     # }
     #endregion NETMethod
-
-    #Powershell Method
-    $graphToken = Get-AzAccessToken -ResourceTypeName AadGraph
-    $BaseUri = 'https://graph.windows.net',[Guid]$graphToken.TenantId -join '/'
-    $requestPath = 'servicePrincipals',$Id,'appRoles' -join '/'
-    $irmParams = @{
-        URI = $($baseUri,$requestPath -join '/')
-        Body = @{
-            'api-version' = 1.6
-        }
-        Authentication = 'Bearer'
-        Token = $graphToken.Token | ConvertTo-SecureString -AsPlainText -Force
-        FollowRelLink = $true
-    }
-    $appRoles = Invoke-RestMethod @irmParams
-    [AppRole[]]$AppRoles.value
 }
