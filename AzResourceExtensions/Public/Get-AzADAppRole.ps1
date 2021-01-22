@@ -1,8 +1,3 @@
-#requires -version 7
-#because of invokerestmethod -rellink use
-using namespace System.Management.Automation
-using namespace System.Threading.Tasks
-
 class AppRole {
     [string]$Description
     [string]$DisplayName
@@ -11,7 +6,7 @@ class AppRole {
     [string[]]$AllowedMemberTypes
     [string]$Value
     [string]$origin
-    [guid]$AppId
+    [guid]$ResourceId
 
     [string]ToString() {
         return $this.Id
@@ -19,7 +14,7 @@ class AppRole {
 }
 
 
-function Get-AzADServicePrincipalAppRole {
+function Get-AzADAppRole {
     <#
     .SYNOPSIS
     Get the app role for a specified service
@@ -38,7 +33,7 @@ function Get-AzADServicePrincipalAppRole {
         }
         Invoke-AzADGraphMethod @graphParams | Foreach-Object {
             $result = [AppRole]$PSItem
-            $result.AppId = $Id
+            $result.ResourceId = $Id
             $result
         }
     }

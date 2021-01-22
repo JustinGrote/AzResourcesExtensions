@@ -1,8 +1,3 @@
-#requires -version 7
-#because of invokerestmethod -rellink use
-using namespace System.Management.Automation
-using namespace System.Threading.Tasks
-
 function Get-AzADManagedIdentity {
     <#
     .SYNOPSIS
